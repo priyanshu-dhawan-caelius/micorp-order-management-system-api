@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<sub-flow name="get-item-data-sub-flows" doc:id="3ac8c77b-085b-49dc-9783-65fb749e4add" >
+		<logger level="INFO" doc:name="START" doc:id="a526b4e1-26c1-4e4f-bc5f-8fa3d040d386" message='#["Start of flow " ++ flow.name]'/>
+		<salesforce:query doc:name="Item__c" doc:id="5ae41905-5508-4a0a-831a-1483aec20420" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[Select fields(all) from Item__c where Orderrr__c = ':orderId' limit 10]]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[output application/java
+---
+{
+	orderId : attributes.queryParams.orderId
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<ee:transform doc:name="Prepare Response" doc:id="ca0bfe8b-7f3b-4cd9-8c72-3de9f2c0a78c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="END" doc:id="648decd3-6fd1-4c70-8a60-6a8d69fbf65f" message='#["End of flow " ++ flow.name]'/>
+	</sub-flow>
+</mule>

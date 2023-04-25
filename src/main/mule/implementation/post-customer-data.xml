@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<sub-flow name="post-customer-data-sub-flow" doc:id="6d5e662d-c62a-4382-8569-557a6c5a2cc9" >
+		<logger level="INFO" doc:name="Logger" doc:id="95b073df-74a2-404f-9927-81c0e9080ab5" message='#["Start of flow " ++ flow.name]'/>
+		<ee:transform doc:name="Request Payload">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+[{
+	address__c: payload.address,
+	firstName__c: payload.firstName,
+	lastName__c: payload.lastName,
+	Orderrr__c: payload.orderId
+}]
+]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+		<salesforce:create doc:name="Customer__c" doc:id="85c5bd47-d5d3-4967-8954-9acac3bb609f" config-ref="Salesforce_Config" type="customer__c"/>
+		<logger level="INFO" doc:name="End" doc:id="be08c0b1-8698-41c7-88b8-b1343fffb378" message='#["End of flow " ++ flow.name]'/>
+	</sub-flow>
+</mule>

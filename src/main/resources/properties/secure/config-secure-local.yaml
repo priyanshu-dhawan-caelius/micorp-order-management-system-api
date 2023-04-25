@@ -1,0 +1,6 @@
+# local secure configuration 
+
+#Salesforce Configuration 
+sfdc:
+   password: "![W/MuyqEGyO7PMWuIhRDZEQ==]"
+   security_token: "![RdOmzqVSr50lM4r8IZh/Okgx99pFdsfajNptNNmoH+c=]"

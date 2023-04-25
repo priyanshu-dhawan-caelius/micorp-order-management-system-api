@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<sub-flow name="get-customer-data-sub-flow" doc:id="3551e52c-eeca-41df-a05d-b772af6b84e4" >
+		<logger level="INFO" doc:name="Start" doc:id="464fb381-b6a6-4fbd-9bc0-24ab78642967" message='#["Start of flow " ++ flow.name]'/>
+		<ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  firstName: "John",
+  lastName: "Doe",
+  address: "1234 Main St San Jose 12345",
+  orderId: "a003k00000TudZ7AAJ",
+  email: "test@gmail.com",
+  phoneNumber: "123-123-1223"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+		<salesforce:query doc:name="Get Customer Query" doc:id="cee14ae8-1f52-4996-926a-10f002d37e61" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[Select fields(all) from customer__c where Orderrr__c = ':orderId' limit 10]]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[output application/java
+---
+{
+	orderId : attributes.queryParams.orderId
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<logger level="INFO" doc:name="End" doc:id="6c61d379-0af7-4039-af36-7e1b7ab016c9" message='#["End of flow " ++ flow.name]'/>
+	</sub-flow>
+</mule>

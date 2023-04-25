@@ -1,0 +1,12 @@
+# dev configuration 
+
+# Api Configuration
+api:
+  id: "18645676"
+  
+# Listener Configuration 
+http:
+  host: "0.0.0.0"
+  port: "8081"
+  readTimeout: "3000"
+ 

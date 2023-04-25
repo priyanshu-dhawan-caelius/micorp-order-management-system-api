@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+	<flow name="micorp-order-management-system-api-main">
+        <http:listener config-ref="micorp-order-management-system-api-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:body ><![CDATA[#[%dw 2.0
+output application/json
+---
+payload]]]></http:body>
+				<http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <ee:transform doc:name="var : correlationId" doc:id="753c6893-724a-46c5-9276-85b8d205677e" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="correlationId" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.headers.correlationId default correlationId]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<apikit:router config-ref="micorp-order-management-system-api-config" />
+		<error-handler ref="Common-Error-Handler" />
+        </flow>
+          <flow name="micorp-order-management-system-api-console">
+        <http:listener config-ref="micorp-order-management-system-api-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="micorp-order-management-system-api-config" />
+		<error-handler ref="Common-Error-Handler" />
+    </flow>
+	<flow name="get:\customer:micorp-order-management-system-api-config" doc:id="1f93c639-e249-424c-9395-471709c78c4b">
+		<flow-ref doc:name="get-customer-data-sub-flow" doc:id="43020220-605f-4579-bbf8-314a6afac6e0" name="get-customer-data-sub-flow" />
+		
+    </flow>
+    <flow name="get:\item:micorp-order-management-system-api-config">
+		<flow-ref doc:name="get-item-data-sub-flows" doc:id="1aebe3dd-418c-4a7b-8536-15e736f481e9" name="get-item-data-sub-flows" />
+		
+    </flow>
+    <flow name="get:\order:micorp-order-management-system-api-config">
+		<flow-ref doc:name="get-order-data-sub-flow" doc:id="667d506f-ae60-4e8a-a2c3-ff32f29e5ac5" name="get-order-data-sub-flow" />
+    </flow>
+    <flow name="post:\customer:application\json:micorp-order-management-system-api-config">
+		<flow-ref doc:name="post-customer-data-sub-flow" doc:id="9852f143-5468-4943-85f7-058a2e7be306" name="post-customer-data-sub-flow" />
+
+    </flow>
+    <flow name="post:\item:application\json:micorp-order-management-system-api-config">
+		<flow-ref doc:name="post-item-data-sub-flow" doc:id="c0e2a0b0-21fb-426d-951c-89cbe643a864" name="post-item-data-sub-flow" />
+		
+    </flow>
+    <flow name="post:\order:application\json:micorp-order-management-system-api-config">
+		<flow-ref doc:name="post-order-data-sub-flow" doc:id="a8f6be5a-0733-464c-b69d-2e950a933fe2" name="post-order-data-sub-flow" />
+		
+    </flow>
+</mule>
