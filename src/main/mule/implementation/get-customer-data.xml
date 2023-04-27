@@ -6,8 +6,8 @@
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
 	<sub-flow name="get-customer-data-sub-flow" doc:id="3551e52c-eeca-41df-a05d-b772af6b84e4" >
-		<logger level="INFO" doc:name="Start" doc:id="464fb381-b6a6-4fbd-9bc0-24ab78642967" message='#["Start of flow " ++ flow.name]'/>
-		<ee:transform>
+		<logger level="INFO" doc:name="Start" doc:id="464fb381-b6a6-4fbd-9bc0-24ab78642967" message='#[{"Flow has started ":flow.name,&#10;    correlationId: vars.correlationId&#10;}]'/>
+		<ee:transform doc:name="sample-payload">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -30,6 +30,14 @@ output application/json
 	orderId : attributes.queryParams.orderId
 }]]]></salesforce:parameters>
 		</salesforce:query>
-		<logger level="INFO" doc:name="End" doc:id="6c61d379-0af7-4039-af36-7e1b7ab016c9" message='#["End of flow " ++ flow.name]'/>
+		<ee:transform doc:name="payload" doc:id="d5a98c75-31ad-4f09-959c-e7e7297761a2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="End" doc:id="6c61d379-0af7-4039-af36-7e1b7ab016c9" message='#[{"Flow has ended ":flow.name,&#10;    correlationId: vars.correlationId&#10;}]'/>
 	</sub-flow>
 </mule>
